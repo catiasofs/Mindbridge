@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Triagem de Bem-Estar — MindBridge</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage: #6B8F71;
+    --sage-light: #EAF0EB;
+    --sage-mid: #B8CDB9;
+    --clay: #C4775A;
+    --clay-light: #F7EDE8;
+    --ink: #1C1C1E;
+    --ink-soft: #4A4A4C;
+    --mist: #F4F5F2;
+    --white: #FFFFFF;
+    --amber: #D4A045;
+    --amber-light: #FBF3E4;
+    --red-soft: #C0443A;
+    --red-light: #FAECEA;
+    --radius: 16px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--mist);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 680px;
+  }
+
+  /* Header */
+  .brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .brand-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--sage);
+    letter-spacing: -0.3px;
+  }
+  .brand-tagline {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    background: var(--sage-mid);
+    border-radius: 100px;
+    height: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    background: var(--sage);
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+    margin-bottom: 24px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 40px;
+    box-shadow: 0 2px 24px rgba(0,0,0,0.06);
+  }
+
+  /* Screen states */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Intro */
+  .intro-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--sage);
+    margin-bottom: 12px;
+  }
+  .intro-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .intro-title em {
+    font-style: italic;
+    color: var(--sage);
+  }
+  .intro-body {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+  .badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+  }
+  .badge {
+    background: var(--sage-light);
+    color: var(--sage);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 100px;
+  }
+  .disclaimer {
+    background: var(--clay-light);
+    border-left: 3px solid var(--clay);
+    padding: 14px 16px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 13px;
+    color: var(--clay);
+    line-height: 1.5;
+    margin-bottom: 32px;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--sage);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 16px 32px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { background: #5a7a60; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { background: var(--sage-mid); cursor: not-allowed; }
+
+  .btn-ghost {
+    background: none;
+    border: 1.5px solid var(--sage-mid);
+    color: var(--ink-soft);
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-top: 12px;
+    width: 100%;
+  }
+  .btn-ghost:hover { border-color: var(--sage); color: var(--sage); }
+
+  /* Question */
+  .q-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--clay);
+    margin-bottom: 8px;
+  }
+  .q-scale-label {
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .q-number {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .q-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+
+  .options-grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid #E8E8E6;
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option-btn:hover { border-color: var(--sage-mid); background: var(--sage-light); }
+  .option-btn.selected { border-color: var(--sage); background: var(--sage-light); color: var(--sage); font-weight: 500; }
+  .option-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mist);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .option-btn.selected .option-score { background: var(--sage); color: var(--white); }
+
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn-back {
+    background: none;
+    border: 1.5px solid #E8E8E6;
+    color: var(--ink-soft);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
+  }
+  .btn-back:hover { border-color: var(--sage-mid); }
+  .btn-next {
+    flex: 1;
+  }
+
+  /* Loading */
+  .loading-wrap {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .loading-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .loading-sub {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 32px;
+  }
+  .spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--sage-light);
+    border-top-color: var(--sage);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 24px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .loading-step {
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .loading-step.visible { opacity: 1; }
+  .loading-step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--sage);
+    flex-shrink: 0;
+  }
+
+  /* Results */
+  .result-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .result-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+  .result-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    margin-bottom: 8px;
+  }
+  .result-subtitle {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+
+  .scores-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    background: var(--mist);
+  }
+  .score-label {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .score-sublabel {
+    font-size: 11px;
+    color: var(--ink-soft);
+    font-weight: 400;
+  }
+  .score-bar-wrap {
+    width: 100px;
+    height: 6px;
+    background: #E0E0DC;
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 1s ease;
+  }
+  .score-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .tag-green { background: var(--sage-light); color: var(--sage); }
+  .tag-amber { background: var(--amber-light); color: var(--amber); }
+  .tag-red { background: var(--red-light); color: var(--red-soft); }
+
+  .level-banner {
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .level-banner.green { background: var(--sage-light); border-left: 4px solid var(--sage); }
+  .level-banner.amber { background: var(--amber-light); border-left: 4px solid var(--amber); }
+  .level-banner.red { background: var(--red-light); border-left: 4px solid var(--red-soft); }
+  .level-banner-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .level-banner-body {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+
+  .next-steps {
+    margin-bottom: 28px;
+  }
+  .next-steps-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .step-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #F0F0EE;
+    align-items: flex-start;
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--sage);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .step-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .step-text strong { color: var(--sage); }
+
+  .crisis-box {
+    background: var(--red-light);
+    border: 1.5px solid var(--red-soft);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--red-soft);
+    line-height: 1.6;
+  }
+  .crisis-box strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+  .result-footer {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: center;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brand">
+    <div class="brand-name">MindBridge</div>
+    <div class="brand-tagline">Triagem de Bem-Estar</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Introdução</div>
+
+  <div class="card">
+
+    <!-- INTRO -->
+    <div class="screen active" id="screen-intro">
+      <div class="intro-eyebrow">Avaliação gratuita · 5 minutos</div>
+      <h1 class="intro-title">Como te <em>sentes</em>, mesmo?</h1>
+      <p class="intro-body">
+        Esta triagem avalia o teu bem-estar emocional com base em escalas clínicas validadas. 
+        Não é um diagnóstico — é um ponto de partida para perceberes onde estás e o que pode ajudar.
+      </p>
+      <div class="badges">
+        <span class="badge">PHQ-9 · Depressão</span>
+        <span class="badge">GAD-7 · Ansiedade</span>
+        <span class="badge">Burnout (MBI)</span>
+        <span class="badge">Solidão (UCLA)</span>
+      </div>
+      <div class="disclaimer">
+        ⚠️ Esta ferramenta não substitui acompanhamento clínico. Se estás em crise, liga para a Linha de Apoio à Saúde Mental: <strong>808 24 24 24</strong>.
+      </div>
+      <button class="btn-primary" onclick="startQuiz()">Começar a triagem</button>
+    </div>
+
+    <!-- QUESTIONS -->
+    <div class="screen" id="screen-question">
+      <div class="q-section-label" id="q-section"></div>
+      <div class="q-scale-label" id="q-scale"></div>
+      <div class="q-number" id="q-number"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options-grid" id="q-options"></div>
+      <div class="nav-row">
+        <button class="btn-back" id="btn-back" onclick="prevQuestion()">← Voltar</button>
+        <button class="btn-primary btn-next" id="btn-next" onclick="nextQuestion()" disabled>Continuar</button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="screen" id="screen-loading">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-title">A analisar as tuas respostas</div>
+        <div class="loading-sub">Calculando o teu perfil de bem-estar…</div>
+        <div class="loading-steps" id="loading-steps">
+          <div class="loading-step" id="ls1"><div class="loading-step-dot"></div>Calculando score de depressão (PHQ-9)</div>
+          <div class="loading-step" id="ls2"><div class="loading-step-dot"></div>Avaliando níveis de ansiedade (GAD-7)</div>
+          <div class="loading-step" id="ls3"><div class="loading-step-dot"></div>Medindo sinais de burnout (MBI)</div>
+          <div class="loading-step" id="ls4"><div class="loading-step-dot"></div>Analisando padrões de solidão (UCLA)</div>
+          <div class="loading-step" id="ls5"><div class="loading-step-dot"></div>Gerando o teu perfil personalizado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="screen" id="screen-results">
+      <div class="result-header">
+        <div class="result-icon" id="result-icon"></div>
+        <div class="result-title" id="result-title"></div>
+        <div class="result-subtitle" id="result-subtitle"></div>
+      </div>
+
+      <div class="scores-grid" id="scores-grid"></div>
+      <div class="level-banner" id="level-banner">
+        <div class="level-banner-title" id="banner-title"></div>
+        <div class="level-banner-body" id="banner-body"></div>
+      </div>
+
+      <div id="crisis-section"></div>
+
+      <div class="next-steps">
+        <div class="next-steps-title">Os teus próximos passos</div>
+        <div id="next-steps-list"></div>
+      </div>
+
+      <button class="btn-primary" onclick="restartQuiz()">Fazer nova triagem</button>
+      <div class="result-footer">
+        Os resultados são confidenciais e não partilhados. Esta avaliação baseia-se em escalas PHQ-9, GAD-7, MBI e UCLA Loneliness Scale — instrumentos de uso livre validados clinicamente.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const questions = [
+  // PHQ-9 — Depression (9 questions, scores 0-3)
+  {
+    section: "Humor e Energia",
+    scale: "PHQ-9 · Escala de Depressão de Patient Health",
+    text: "Nas últimas 2 semanas, com que frequência tiveste pouco interesse ou prazer em fazer as coisas?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "phq"
+  },
+  {
+    section: "Humor e Energia",
+    scale: "PHQ-9 · Escala de Depressão de Patient Health",
+    text: "Sentiste-te em baixo, deprimido(a) ou sem esperança?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "phq"
+  },
+  {
+    section: "Humor e Energia",
+    scale: "PHQ-9 · Escala de Depressão de Patient Health",
+    text: "Tiveste dificuldade em adormecer, ficares a dormir, ou dormiste demasiado?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "phq"
+  },
+  {
+    section: "Humor e Energia",
+    scale: "PHQ-9 · Escala de Depressão de Patient Health",
+    text: "Sentiste-te cansado(a) ou com pouca energia?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "phq"
+  },
+  {
+    section: "Humor e Energia",
+    scale: "PHQ-9 · Escala de Depressão de Patient Health",
+    text: "Sentiste-te mal contigo próprio(a), achaste que és um fracasso ou que decepcionaste a tua família?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "phq"
+  },
+  // GAD-7 — Anxiety (7 questions)
+  {
+    section: "Ansiedade",
+    scale: "GAD-7 · Escala de Ansiedade Generalizada",
+    text: "Sentiste-te nervoso(a), ansioso(a) ou em alerta?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "gad"
+  },
+  {
+    section: "Ansiedade",
+    scale: "GAD-7 · Escala de Ansiedade Generalizada",
+    text: "Não conseguiste parar de te preocupar ou controlar as preocupações?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "gad"
+  },
+  {
+    section: "Ansiedade",
+    scale: "GAD-7 · Escala de Ansiedade Generalizada",
+    text: "Preocupaste-te demasiado com assuntos diferentes?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "gad"
+  },
+  {
+    section: "Ansiedade",
+    scale: "GAD-7 · Escala de Ansiedade Generalizada",
+    text: "Tiveste dificuldade em relaxar?",
+    options: ["Nunca", "Vários dias", "Mais de metade dos dias", "Quase todos os dias"],
+    scores: [0,1,2,3], group: "gad"
+  },
+  // Burnout (MBI simplificado, 4 perguntas)
+  {
+    section: "Burnout",
+    scale: "MBI · Maslach Burnout Inventory (adaptado)",
+    text: "Sentes-te emocionalmente esgotado(a) pelo teu trabalho?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Sempre"],
+    scores: [0,1,2,3,4], group: "burnout"
+  },
+  {
+    section: "Burnout",
+    scale: "MBI · Maslach Burnout Inventory (adaptado)",
+    text: "Sentes que o teu trabalho te deixa sem energia para o resto da vida?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Sempre"],
+    scores: [0,1,2,3,4], group: "burnout"
+  },
+  {
+    section: "Burnout",
+    scale: "MBI · Maslach Burnout Inventory (adaptado)",
+    text: "Sentes-te distante ou indiferente em relação às pessoas à tua volta por causa do trabalho?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente", "Sempre"],
+    scores: [0,1,2,3,4], group: "burnout"
+  },
+  // UCLA Loneliness (3 perguntas)
+  {
+    section: "Ligação e Solidão",
+    scale: "UCLA Loneliness Scale (adaptado)",
+    text: "Com que frequência sentes que não há ninguém com quem possas falar?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente"],
+    scores: [1,2,3,4], group: "ucla"
+  },
+  {
+    section: "Ligação e Solidão",
+    scale: "UCLA Loneliness Scale (adaptado)",
+    text: "Com que frequência te sentes excluído(a)?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente"],
+    scores: [1,2,3,4], group: "ucla"
+  },
+  {
+    section: "Ligação e Solidão",
+    scale: "UCLA Loneliness Scale (adaptado)",
+    text: "Com que frequência sentes que as pessoas à tua volta não te compreendem realmente?",
+    options: ["Nunca", "Raramente", "Às vezes", "Frequentemente"],
+    scores: [1,2,3,4], group: "ucla"
+  },
+];
+
+let currentQ = 0;
+let answers = new Array(questions.length).fill(null);
+
+function updateProgress() {
+  const total = questions.length;
+  const done = answers.filter(a => a !== null).length;
+  const pct = Math.round((currentQ / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Pergunta ${currentQ + 1} de ${total}`;
+}
+
+function startQuiz() {
+  showScreen('screen-question');
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-section').textContent = q.section;
+  document.getElementById('q-scale').textContent = q.scale;
+  document.getElementById('q-number').textContent = `Pergunta ${currentQ + 1} de ${questions.length}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('btn-back').style.display = currentQ === 0 ? 'none' : 'block';
+  document.getElementById('btn-next').disabled = answers[currentQ] === null;
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.options.forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[currentQ] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="option-score">${q.scores[i]}</span>${label}`;
+    btn.onclick = () => selectOption(i);
+    opts.appendChild(btn);
+  });
+  updateProgress();
+}
+
+function selectOption(i) {
+  answers[currentQ] = i;
+  document.querySelectorAll('.option-btn').forEach((b, idx) => {
+    b.classList.toggle('selected', idx === i);
+  });
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQuestion() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function calcScores() {
+  const groups = { phq: 0, gad: 0, burnout: 0, ucla: 0 };
+  questions.forEach((q, i) => {
+    if (answers[i] !== null) groups[q.group] += q.scores[answers[i]];
+  });
+  return groups;
+}
+
+function getLevel(score, max, thresholds) {
+  const pct = score / max;
+  if (pct <= thresholds[0]) return 'green';
+  if (pct <= thresholds[1]) return 'amber';
+  return 'red';
+}
+
+function showResults() {
+  showScreen('screen-loading');
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = 'A calcular resultados…';
+
+  const steps = ['ls1','ls2','ls3','ls4','ls5'];
+  steps.forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('visible'), i * 600);
+  });
+
+  setTimeout(() => {
+    const s = calcScores();
+    renderResults(s);
+    showScreen('screen-results');
+    document.getElementById('progressLabel').textContent = 'Resultado pronto';
+  }, 3500);
+}
+
+function renderResults(s) {
+  // PHQ: max 15 (5 questions), thresholds mild=0.33, mod=0.66
+  // GAD: max 12 (4 questions), thresholds mild=0.33, mod=0.66
+  // Burnout: max 12 (3 questions), thresholds=0.33, 0.66
+  // UCLA: max 12 (3 questions, scored 1-4), threshold low=3/12, high=9/12
+
+  const metrics = [
+    { label: 'Depressão', sublabel: 'PHQ-9', score: s.phq, max: 15, thresholds: [0.27, 0.6] },
+    { label: 'Ansiedade', sublabel: 'GAD-7', score: s.gad, max: 12, thresholds: [0.27, 0.6] },
+    { label: 'Burnout', sublabel: 'MBI', score: s.burnout, max: 12, thresholds: [0.33, 0.66] },
+    { label: 'Solidão', sublabel: 'UCLA', score: s.ucla - 3, max: 9, thresholds: [0.33, 0.66] },
+  ];
+
+  const levels = metrics.map(m => getLevel(m.score, m.max, m.thresholds));
+  const redCount = levels.filter(l => l === 'red').length;
+  const amberCount = levels.filter(l => l === 'amber').length;
+
+  let overallLevel = 'green';
+  if (redCount >= 1) overallLevel = 'red';
+  else if (amberCount >= 2) overallLevel = 'amber';
+  else if (amberCount >= 1) overallLevel = 'amber';
+
+  // Icon & title
+  const icons = { green: '🌱', amber: '🌤️', red: '🌧️' };
+  const titles = {
+    green: 'O teu bem-estar está estável',
+    amber: 'Alguns sinais que merecem atenção',
+    red: 'Estás a passar por um momento difícil'
+  };
+  const subtitles = {
+    green: 'Os teus resultados indicam um nível de bem-estar geral positivo. Há sempre espaço para crescer.',
+    amber: 'Alguns indicadores sugerem que estás sob pressão. Não tens de esperar que piore para agir.',
+    red: 'Os teus resultados indicam níveis de sofrimento significativos. Mereces apoio — não estás sozinho(a).'
+  };
+
+  document.getElementById('result-icon').textContent = icons[overallLevel];
+  document.getElementById('result-title').textContent = titles[overallLevel];
+  document.getElementById('result-subtitle').textContent = subtitles[overallLevel];
+
+  // Scores grid
+  const grid = document.getElementById('scores-grid');
+  grid.innerHTML = '';
+  const tagLabels = { green: 'Baixo', amber: 'Moderado', red: 'Elevado' };
+  metrics.forEach((m, i) => {
+    const lv = levels[i];
+    const pct = Math.min(100, Math.round((m.score / m.max) * 100));
+    const barColors = { green: 'var(--sage)', amber: 'var(--amber)', red: 'var(--red-soft)' };
+    grid.innerHTML += `
+      <div class="score-row">
+        <div class="score-label">${m.label} <span class="score-sublabel">${m.sublabel}</span></div>
+        <div class="score-bar-wrap"><div class="score-bar-fill" style="width:${pct}%;background:${barColors[lv]}"></div></div>
+        <span class="score-tag tag-${lv}">${tagLabels[lv]}</span>
+      </div>`;
+  });
+
+  // Banner
+  const banner = document.getElementById('level-banner');
+  banner.className = 'level-banner ' + overallLevel;
+  const bannerTitles = {
+    green: '✓ Perfil: Bem-estar estável',
+    amber: '⚡ Perfil: Atenção recomendada',
+    red: '🔴 Perfil: Apoio prioritário'
+  };
+  const bannerBodies = {
+    green: 'O teu perfil sugere que estás a gerir bem os desafios do dia a dia. Ferramentas de prevenção e autocuidado podem ajudar a manter este equilíbrio.',
+    amber: 'Estás a mostrar sinais de esforço acumulado. Ferramentas de regulação emocional e, eventualmente, apoio profissional podem fazer diferença.',
+    red: 'O teu nível de sofrimento é significativo. Recomendamos que fales com um profissional de saúde mental. Não precisas de esperar para pedir ajuda.'
+  };
+  document.getElementById('banner-title').textContent = bannerTitles[overallLevel];
+  document.getElementById('banner-body').textContent = bannerBodies[overallLevel];
+
+  // Crisis box
+  const crisisSection = document.getElementById('crisis-section');
+  if (overallLevel === 'red') {
+    crisisSection.innerHTML = `<div class="crisis-box"><strong>📞 Linha de Crise disponível 24h</strong>Linha de Apoio à Saúde Mental: <strong>808 24 24 24</strong> (chamada gratuita). Se estás em perigo imediato, liga 112.</div>`;
+  } else {
+    crisisSection.innerHTML = '';
+  }
+
+  // Next steps
+  const stepsByLevel = {
+    green: [
+      { t: 'Explora as ferramentas de autocuidado', b: 'Módulos de <strong>mindfulness e TCC</strong> para manter o teu equilíbrio' },
+      { t: 'Diário emocional guiado', b: 'Regista padrões e aprende a reconhecer os teus gatilhos antes de aumentarem' },
+      { t: 'Partilha com alguém', b: 'Considera conversar sobre bem-estar com alguém de confiança — prevenção é o melhor cuidado' },
+    ],
+    amber: [
+      { t: 'Começa um programa guiado', b: 'Percursos de <strong>4 semanas</strong> baseados em TCC para ansiedade ou burnout' },
+      { t: 'Agenda uma sessão exploratória', b: 'Uma conversa com um psicólogo pode clarificar o que estás a sentir' },
+      { t: 'Regista o teu humor diariamente', b: 'Padrões visíveis ajudam-te — e a um profissional — a entender o que está a acontecer' },
+    ],
+    red: [
+      { t: 'Fala com um profissional esta semana', b: 'Temos psicólogos disponíveis na plataforma com consultas a partir de 40€' },
+      { t: 'Liga para a linha de apoio', b: '<strong>808 24 24 24</strong> — gratuita, confidencial, disponível agora' },
+      { t: 'Não fiques sozinho(a)', b: 'Partilha o que estás a sentir com alguém de confiança — dar esse passo é coragem' },
+    ]
+  };
+
+  const list = document.getElementById('next-steps-list');
+  list.innerHTML = '';
+  stepsByLevel[overallLevel].forEach((step, i) => {
+    list.innerHTML += `<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text"><strong>${step.t}</strong><br>${step.b}</div></div>`;
+  });
+}
+
+function restartQuiz() {
+  currentQ = 0;
+  answers = new Array(questions.length).fill(null);
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressLabel').textContent = 'Introdução';
+  document.querySelectorAll('.loading-step').forEach(s => s.classList.remove('visible'));
+  showScreen('screen-intro');
+}
+</script>
+</body>
+</html>

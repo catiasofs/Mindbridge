@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulos de Autoajuda — MindBridge</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sage: #6B8F71;
+    --sage-light: #EAF0EB;
+    --sage-mid: #B8CDB9;
+    --clay: #C4775A;
+    --clay-light: #F7EDE8;
+    --ink: #1C1C1E;
+    --ink-soft: #5A5A5C;
+    --mist: #F4F5F2;
+    --white: #FFFFFF;
+    --amber: #C49030;
+    --amber-light: #FBF3E4;
+    --purple: #7B6FA0;
+    --purple-light: #F0EEF8;
+    --teal: #4A8FA8;
+    --teal-light: #E8F4F8;
+    --rose: #B05070;
+    --rose-light: #F8EEF2;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--mist);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 32px 16px 64px;
+  }
+
+  .shell { max-width: 860px; margin: 0 auto; }
+
+  /* Header */
+  .page-header { text-align: center; margin-bottom: 48px; }
+  .page-eyebrow {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--sage); margin-bottom: 10px;
+  }
+  .page-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px; line-height: 1.15; color: var(--ink); margin-bottom: 14px;
+  }
+  .page-title em { font-style: italic; color: var(--sage); }
+  .page-sub {
+    font-size: 15px; color: var(--ink-soft); line-height: 1.7;
+    max-width: 560px; margin: 0 auto 28px;
+  }
+  .legend {
+    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--ink-soft);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* Module cards */
+  .modules-list { display: flex; flex-direction: column; gap: 24px; }
+
+  .module-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+  }
+  .module-card:hover { box-shadow: 0 4px 32px rgba(0,0,0,0.10); }
+
+  .module-header {
+    padding: 24px 28px 20px;
+    display: flex; align-items: flex-start; gap: 18px;
+    cursor: pointer; user-select: none;
+  }
+  .module-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .module-meta { flex: 1; }
+  .module-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; padding: 3px 8px; border-radius: 100px;
+  }
+  .module-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: var(--ink); margin-bottom: 4px;
+  }
+  .module-desc { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .module-stats {
+    display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .stat {
+    font-size: 12px; color: var(--ink-soft);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .stat-icon { font-size: 13px; }
+
+  .toggle-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 18px;
+    padding: 4px; margin-left: 8px; flex-shrink: 0;
+    transition: transform 0.3s;
+  }
+  .module-card.open .toggle-btn { transform: rotate(180deg); }
+
+  /* Module body */
+  .module-body {
+    display: none;
+    border-top: 1px solid #F0F0EE;
+  }
+  .module-card.open .module-body { display: block; }
+
+  .weeks-list { padding: 0 28px 28px; }
+
+  .week-block { margin-top: 20px; }
+  .week-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--ink-soft); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .week-label::after {
+    content: ''; flex: 1; height: 1px; background: #EBEBEB;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+
+  .day-card {
+    background: var(--mist);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    border: 1.5px solid transparent;
+  }
+  .day-card:hover { background: #ECEEE9; border-color: var(--sage-mid); }
+  .day-card.active { background: var(--sage-light); border-color: var(--sage); }
+
+  .day-number {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--ink-soft); margin-bottom: 6px;
+  }
+  .day-title {
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .day-technique {
+    font-size: 11px; color: var(--ink-soft); margin-bottom: 8px;
+  }
+  .day-meta {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .day-time {
+    font-size: 11px; color: var(--sage); font-weight: 500;
+  }
+  .day-type {
+    font-size: 10px; padding: 2px 7px; border-radius: 100px;
+    font-weight: 600;
+  }
+
+  /* Exercise detail panel */
+  .exercise-panel {
+    display: none;
+    background: var(--white);
+    border-top: 1px solid #F0F0EE;
+    padding: 28px;
+  }
+  .exercise-panel.active { display: block; }
+
+  .panel-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 20px; gap: 16px;
+  }
+  .panel-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: var(--ink);
+  }
+  .panel-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--ink-soft); font-size: 20px; padding: 2px;
+    flex-shrink: 0;
+  }
+
+  .panel-science {
+    background: var(--amber-light);
+    border-left: 3px solid var(--amber);
+    padding: 12px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin-bottom: 20px;
+  }
+  .panel-science-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--amber); margin-bottom: 4px;
+  }
+  .panel-science-text { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+
+  .steps-list { margin-bottom: 24px; }
+  .step-item {
+    display: flex; gap: 14px; padding: 12px 0;
+    border-bottom: 1px solid #F4F4F2;
+    align-items: flex-start;
+  }
+  .step-item:last-child { border-bottom: none; }
+  .step-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--sage); color: var(--white);
+    font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .step-body { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .step-time {
+    font-size: 11px; color: var(--sage); font-weight: 500;
+    margin-top: 4px;
+  }
+
+  .reflection-box {
+    background: var(--purple-light);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .reflection-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--purple); margin-bottom: 10px;
+  }
+  .reflection-questions { display: flex; flex-direction: column; gap: 8px; }
+  .reflection-q {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+    padding-left: 12px; border-left: 2px solid var(--purple);
+  }
+
+  /* Science footer */
+  .science-footer {
+    background: var(--white); border-radius: var(--radius);
+    padding: 28px 32px; margin-top: 32px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+  .science-footer-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .refs-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .ref-card {
+    background: var(--mist); border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .ref-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .ref-full { font-size: 11px; color: var(--ink-soft); margin-bottom: 6px; }
+  .ref-evidence {
+    font-size: 11px; color: var(--sage); font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="page-header">
+    <div class="page-eyebrow">MindBridge · Arquitetura de Conteúdo</div>
+    <h1 class="page-title">Módulos de <em>autoajuda</em></h1>
+    <p class="page-sub">
+      5 módulos temáticos com exercícios diários de 5–10 minutos, baseados em TCC, ACT e mindfulness. 
+      Cada módulo tem 4 semanas de conteúdo progressivo.
+    </p>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#6B8F71"></div>TCC · Terapia Cognitivo-Comportamental</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#7B6FA0"></div>ACT · Acceptance & Commitment</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#4A8FA8"></div>Mindfulness</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#C4775A"></div>Psicoeducação</div>
+    </div>
+  </div>
+
+  <div class="modules-list" id="modules-list"></div>
+
+  <div class="science-footer">
+    <div class="science-footer-title">Base científica dos módulos</div>
+    <div class="refs-grid">
+      <div class="ref-card">
+        <div class="ref-name">TCC</div>
+        <div class="ref-full">Terapia Cognitivo-Comportamental</div>
+        <div class="ref-evidence">✓ Padrão ouro para ansiedade e depressão (APA, 2017)</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-name">ACT</div>
+        <div class="ref-full">Acceptance & Commitment Therapy</div>
+        <div class="ref-evidence">✓ Eficaz para burnout e valores de vida (Hayes, 2004)</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-name">MBSR</div>
+        <div class="ref-full">Mindfulness-Based Stress Reduction</div>
+        <div class="ref-evidence">✓ Reduz cortisol e rumination (Kabat-Zinn, 1990)</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-name">DBT Skills</div>
+        <div class="ref-full">Dialectical Behavior Therapy</div>
+        <div class="ref-evidence">✓ Regulação emocional e compulsão (Linehan, 1993)</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-name">CFT</div>
+        <div class="ref-full">Compassion-Focused Therapy</div>
+        <div class="ref-evidence">✓ Solidão e autocrítica (Gilbert, 2009)</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-name">IPC</div>
+        <div class="ref-full">Intervenção Psicoeducacional Comportamental</div>
+        <div class="ref-evidence">✓ Consciência e mudança de padrões (Beck, 2011)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const modules = [
+  {
+    id: 'burnout',
+    icon: '🔋',
+    color: '#C4775A',
+    bgColor: '#F7EDE8',
+    name: 'Recuperar do Burnout',
+    desc: 'Para quem se sente cronicamente exausto, sem energia e a funcionar no limite.',
+    weeks: 4, days: 28, minutes: '7–10',
+    techniques: ['TCC', 'ACT', 'Psicoeducação'],
+    badgeColors: [
+      { bg: '#EAF0EB', color: '#6B8F71' },
+      { bg: '#F0EEF8', color: '#7B6FA0' },
+      { bg: '#F7EDE8', color: '#C4775A' },
+    ],
+    weekData: [
+      {
+        title: 'Semana 1 — Reconhecer',
+        days: [
+          { title: 'O que é o burnout?', technique: 'Psicoeducação', time: '5 min', type: 'Leitura', typeColor: '#F7EDE8', typeText: '#C4775A',
+            science: 'O burnout resulta de stress crónico não gerido. Compreender o mecanismo fisiológico reduz a autocrítica e aumenta a motivação para mudar.',
+            steps: [
+              { title: 'Lê o mapa do burnout', body: 'O burnout tem 3 dimensões: exaustão emocional, despersonalização, e redução da realização pessoal (Maslach, 1981). Identificar em qual estás é o primeiro passo.', time: '3 min' },
+              { title: 'Assinala onde te reconheces', body: 'Numa escala de 1-10, avalia cada dimensão. Não há certo ou errado — é apenas informação.', time: '2 min' },
+            ],
+            reflections: ['O que é que o teu corpo tenta dizer-te quando chega a sexta-feira à noite?', 'Há quanto tempo te sentes assim?']
+          },
+          { title: 'Registo de energia', technique: 'TCC', time: '5 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'O registo comportamental é uma técnica TCC fundamental — torna padrões invisíveis visíveis, o que é pré-requisito para qualquer mudança.',
+            steps: [
+              { title: 'Regista o teu nível de energia', body: 'Em 3 momentos do dia (manhã, tarde, noite) regista de 1-10 o teu nível de energia. Faz isto durante 3 dias.', time: '2 min/dia' },
+              { title: 'Identifica padrões', body: 'Quando é que a energia cai mais? O que aconteceu antes? Existe alguma atividade que consistentemente drena ou recarrega?', time: '3 min' },
+            ],
+            reflections: ['Que atividade te deixa mais esgotado(a) — mesmo que sejas "bom/boa" nela?', 'Existe algo que fazes que te dá energia, mesmo que pouco?']
+          },
+          { title: 'Inventário de perdas', technique: 'ACT', time: '8 min', type: 'Reflexão', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Na ACT, o burnout é visto como perda de contacto com os valores. Este exercício ajuda a identificar o que foi sacrificado e porquê isso dói.',
+            steps: [
+              { title: 'Lista o que perdeste', body: 'Escreve 5 coisas que costumavam ter importância e que agora não tens tempo/energia para: hobbies, relações, momentos de alegria.', time: '4 min' },
+              { title: 'Conecta com o valor por baixo', body: 'Para cada item, pergunta: "Por que é que isso era importante para mim?" A resposta revela os teus valores centrais.', time: '4 min' },
+            ],
+            reflections: ['Se tivesses 3 horas livres amanhã, o que farias — sem culpa?', 'O que é que o burnout te "custou" que mais sentes falta?']
+          },
+          { title: 'Respiração 4-7-8', technique: 'Mindfulness', time: '6 min', type: 'Prática', typeColor: '#E8F4F8', typeText: '#4A8FA8',
+            science: 'A respiração 4-7-8 ativa o sistema nervoso parassimpático em menos de 5 minutos, reduzindo cortisol e frequência cardíaca (Jerath et al., 2006).',
+            steps: [
+              { title: 'Posição', body: 'Senta-te confortavelmente. Coloca a língua no palato, atrás dos dentes superiores. Expira completamente pela boca.', time: '1 min' },
+              { title: 'O ciclo', body: 'Inspira pelo nariz contando 4. Segura contando 7. Expira pela boca contando 8. Repete 4 vezes.', time: '4 min' },
+              { title: 'Observa', body: 'Nota a diferença no teu corpo antes e depois. Sem julgamento — só observação.', time: '1 min' },
+            ],
+            reflections: ['O que notaste no teu corpo durante o exercício?', 'Há um momento do dia em que este exercício seria especialmente útil?']
+          },
+          { title: 'Os teus "não" invisíveis', technique: 'TCC', time: '7 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'A dificuldade em dizer não é um dos principais preditores de burnout. A TCC usa a identificação de crenças disfuncionais ("tenho de agradar") como ponto de entrada.',
+            steps: [
+              { title: 'Lista os últimos 3 "sins" que custaram', body: 'Pensa em situações recentes em que disseste sim mas querias dizer não. Escreve-as.', time: '3 min' },
+              { title: 'Identifica a crença por baixo', body: 'Para cada uma, pergunta: "O que eu temia que acontecesse se dissesse não?" Ex: "Pensariam que sou preguiçoso(a)."', time: '4 min' },
+            ],
+            reflections: ['Essa crença é baseada em factos ou em suposições?', 'O que dirias a um amigo que tivesse esse mesmo medo?']
+          },
+        ]
+      },
+      {
+        title: 'Semana 2 — Parar',
+        days: [
+          { title: 'A arte de descansar de verdade', technique: 'Psicoeducação', time: '5 min', type: 'Leitura', typeColor: '#F7EDE8', typeText: '#C4775A',
+            science: 'Existem 7 tipos de descanso (Saundra Dalton-Smith): físico, mental, social, criativo, emocional, sensorial e espiritual. O burnout acontece quando ignoramos a maioria.',
+            steps: [
+              { title: 'Aprende os 7 tipos de descanso', body: 'Descanso físico não é o único tipo. Descanso mental é parar de pensar. Descanso social é tempo sem ter de agradar. Descanso emocional é poder ser honesto(a).', time: '3 min' },
+              { title: 'Identifica o teu défice', body: 'Qual dos 7 tipos está mais em falta na tua vida? Assinala os 2 mais críticos.', time: '2 min' },
+            ],
+            reflections: ['Quando foi a última vez que descansaste de verdade — não apenas dormiste?', 'Que tipo de descanso nunca te permites ter?']
+          },
+          { title: 'Micro-pausas conscientes', technique: 'Mindfulness', time: '5 min', type: 'Prática', typeColor: '#E8F4F8', typeText: '#4A8FA8',
+            science: 'Pausas de 5 minutos a cada 90 minutos aumentam a produtividade e reduzem o stress cumulativo — baseado nos ciclos ultradianos de Kleitman.',
+            steps: [
+              { title: 'Define 3 pausas no teu dia', body: 'Coloca alarmes para 3 momentos do dia. Quando tocarem, para completamente por 5 minutos — sem telemóvel, sem tarefas.', time: '1 min (configurar)' },
+              { title: 'Durante a pausa', body: 'Olha pela janela. Estira o corpo. Bebe água devagar. O objetivo é desligar o modo "fazer" e entrar no modo "ser".', time: '5 min/pausa' },
+            ],
+            reflections: ['O que sentes quando paras — alívio, culpa, ou desconforto?', 'O que te impede de parar mais vezes?']
+          },
+          { title: 'Desfazer a fusão cognitiva', technique: 'ACT', time: '8 min', type: 'Exercício', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Fusão cognitiva é quando nos "fundimos" com os nossos pensamentos e os tratamos como verdades. A ACT ensina a criar distância — "Estou a ter o pensamento de que..." em vez de "Sou um fracasso."',
+            steps: [
+              { title: 'Identifica um pensamento repetitivo negativo', body: 'Escolhe um pensamento que te persegue. Ex: "Não sou suficiente", "Estou a falhar em tudo."', time: '2 min' },
+              { title: 'Aplica a técnica de defusão', body: 'Em vez de "Não sou suficiente", di: "Estou a ter o pensamento de que não sou suficiente." Nota a diferença — o pensamento não muda, mas a tua relação com ele sim.', time: '3 min' },
+              { title: 'Observa o pensamento como nuvem', body: 'Fecha os olhos. Imagina os teus pensamentos como nuvens que passam. Tu és o céu — permanente. Os pensamentos são o tempo — passageiro.', time: '3 min' },
+            ],
+            reflections: ['O pensamento parece menos "verdadeiro" quando te distancias dele?', 'Que outros pensamentos poderiam beneficiar desta técnica?']
+          },
+        ]
+      },
+      {
+        title: 'Semana 3 — Recarregar',
+        days: [
+          { title: 'Ativar o sistema de recompensa', technique: 'TCC', time: '7 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'O burnout suprime o sistema de recompensa dopaminérgico. Atividades de prazer — mesmo pequenas — revertem progressivamente este padrão.',
+            steps: [
+              { title: 'Lista 10 coisas que já te deram prazer', body: 'Podem ser coisas que deixaste de fazer. Não filtres por "tenho tempo" — só lista.', time: '3 min' },
+              { title: 'Escolhe 1 para esta semana', body: 'A mais acessível. Agenda-a como compromisso — com data e hora. O prazer não acontece por acidente quando estás em burnout.', time: '2 min' },
+              { title: 'Regista como te sentiste', body: 'Depois de a fazeres, escreve 3 palavras sobre como te sentiste. Isto treina o cérebro a antecipar recompensa.', time: '2 min' },
+            ],
+            reflections: ['Há culpa em fazer coisas que te dão prazer? De onde vem essa culpa?', 'O que precisaria de acontecer para te dares permissão para descansar?']
+          },
+          { title: 'Carta para o teu eu exausto', technique: 'CFT', time: '10 min', type: 'Reflexão', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'A Compassion-Focused Therapy usa autocompaixão como antídoto à autocrítica — um dos mecanismos centrais do burnout. Escrever uma carta ativa o sistema de afeto e reduz vergonha.',
+            steps: [
+              { title: 'Imagina um amigo com o teu burnout', body: 'Se o teu melhor amigo estivesse a passar pelo que tu estás a passar, o que lhe dirias? Escreve isso.', time: '4 min' },
+              { title: 'Reescreve para ti', body: 'Agora reescreve essa carta, dirigida a ti próprio(a). Usa o mesmo tom gentil e honesto.', time: '4 min' },
+              { title: 'Lê em voz alta', body: 'Lê a carta em voz alta. Nota o que sentes — pode ser desconforto, pode ser alívio.', time: '2 min' },
+            ],
+            reflections: ['Foi mais fácil ser gentil com o "amigo imaginário" do que contigo? Porquê?', 'O que impede que sejas tão compassivo(a) contigo como és com os outros?']
+          },
+        ]
+      },
+      {
+        title: 'Semana 4 — Redesenhar',
+        days: [
+          { title: 'Os teus valores-bússola', technique: 'ACT', time: '10 min', type: 'Reflexão', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Na ACT, valores não são objetivos — são direções de vida. Agir de acordo com os teus valores, mesmo em pequenos gestos, é o antídoto ao vazio do burnout.',
+            steps: [
+              { title: 'Escolhe os teus 5 valores', body: 'De uma lista de valores (família, criatividade, saúde, impacto, liberdade, aprendizagem, conexão, honestidade...) escolhe os 5 mais importantes.', time: '3 min' },
+              { title: 'Avalia o alinhamento atual', body: 'Para cada valor, avalia de 1-10 o quanto a tua vida atual reflete esse valor. Onde há maior discrepância?', time: '4 min' },
+              { title: 'Uma ação por valor', body: 'Para os 2 com maior discrepância, define uma ação concreta esta semana — mesmo que pequena.', time: '3 min' },
+            ],
+            reflections: ['O teu trabalho atual está alinhado com algum dos teus valores centrais?', 'O que mudaria na tua vida se vivesses 20% mais alinhada com os teus valores?']
+          },
+          { title: 'Plano de prevenção de recaída', technique: 'TCC', time: '8 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'A prevenção de recaída é uma técnica TCC que identifica sinais de alerta precoces e cria planos de resposta antes de a crise acontecer.',
+            steps: [
+              { title: 'Identifica os teus sinais de alerta', body: 'O que notas em ti quando o stress está a acumular? (Insónia, irritabilidade, isolamento, comer diferente, dores físicas...)', time: '3 min' },
+              { title: 'Define um plano de 3 passos', body: 'Quando notas esses sinais: 1) O que fazes imediatamente? 2) A quem pedes ajuda? 3) O que eliminas temporariamente?', time: '5 min' },
+            ],
+            reflections: ['Quem na tua vida pode dizer-te quando parece que estás a entrar em burnout — antes de tu própria o perceberes?']
+          },
+        ]
+      }
+    ]
+  },
+  {
+    id: 'anxiety',
+    icon: '🌊',
+    color: '#4A8FA8',
+    bgColor: '#E8F4F8',
+    name: 'Ansiedade e Preocupação',
+    desc: 'Para quem tem pensamentos acelerados, preocupações constantes e dificuldade em desligar.',
+    weeks: 4, days: 28, minutes: '5–8',
+    techniques: ['TCC', 'Mindfulness', 'Psicoeducação'],
+    badgeColors: [
+      { bg: '#EAF0EB', color: '#6B8F71' },
+      { bg: '#E8F4F8', color: '#4A8FA8' },
+      { bg: '#F7EDE8', color: '#C4775A' },
+    ],
+    weekData: [
+      {
+        title: 'Semana 1 — Compreender',
+        days: [
+          { title: 'O loop da ansiedade', technique: 'Psicoeducação', time: '5 min', type: 'Leitura', typeColor: '#F7EDE8', typeText: '#C4775A',
+            science: 'A ansiedade é uma resposta de sobrevivência mal calibrada. Compreender o ciclo pensamento → emoção → comportamento é o primeiro passo da TCC.',
+            steps: [
+              { title: 'Aprende o ciclo TCC', body: 'Um pensamento ("algo vai correr mal") gera uma emoção (ansiedade) que gera um comportamento (evitamento). O evitamento confirma o perigo e fecha o loop.', time: '3 min' },
+              { title: 'Identifica o teu loop', body: 'Pensa numa situação recente de ansiedade. Qual foi o pensamento? A emoção? O comportamento? Escreve.', time: '2 min' },
+            ],
+            reflections: ['O teu cérebro costuma antecipar o pior? Com que frequência esse pior acontece de facto?']
+          },
+          { title: 'Registar pensamentos ansiosos', technique: 'TCC', time: '7 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'O registo de pensamentos (thought record) é a técnica TCC mais estudada para ansiedade — externalizar o pensamento reduz a sua intensidade.',
+            steps: [
+              { title: 'Usa o formato SITUAÇÃO → PENSAMENTO → EMOÇÃO', body: 'Para uma situação que te causou ansiedade hoje, preenche: O que aconteceu? O que pensei automaticamente? O que senti no corpo?', time: '4 min' },
+              { title: 'Avalia a intensidade', body: 'De 0-10, quão intenso foi o pensamento? Quão intensa foi a emoção? Escreve os números.', time: '3 min' },
+            ],
+            reflections: ['O pensamento automático era um facto ou uma interpretação?', 'Existia outra forma de interpretar a situação?']
+          },
+          { title: 'Aterrar no presente', technique: 'Mindfulness', time: '6 min', type: 'Prática', typeColor: '#E8F4F8', typeText: '#4A8FA8',
+            science: 'A técnica 5-4-3-2-1 ativa o córtex pré-frontal e interrompe o sequestro da amígdala — eficaz em ataques de ansiedade agudos.',
+            steps: [
+              { title: '5 coisas que vês', body: 'Olha à tua volta. Nomeia 5 objetos que consegues ver agora. Em voz alta se puderes.', time: '1 min' },
+              { title: '4 coisas que sentes no corpo', body: 'O toque da roupa na pele, os pés no chão, o ar nas narinas, o peso na cadeira.', time: '1 min' },
+              { title: '3 sons, 2 cheiros, 1 sabor', body: 'Progressivamente mais difíceis — isso é intencional. O esforço de procurar mantém-te no presente.', time: '2 min' },
+              { title: 'Respira', body: '3 respirações profundas. Nota a diferença.', time: '2 min' },
+            ],
+            reflections: ['A ansiedade diminuiu durante o exercício? Em que ponto?']
+          },
+        ]
+      },
+      {
+        title: 'Semana 2 — Questionar',
+        days: [
+          { title: 'Reestruturação cognitiva', technique: 'TCC', time: '8 min', type: 'Exercício', typeColor: '#EAF0EB', typeText: '#6B8F71',
+            science: 'A reestruturação cognitiva questiona a veracidade dos pensamentos automáticos — o núcleo da TCC de Beck (1979), com décadas de evidência.',
+            steps: [
+              { title: 'Pega num pensamento ansioso', body: 'Escolhe um pensamento que se repete. Ex: "Vou perder o emprego", "As pessoas não gostam de mim."', time: '2 min' },
+              { title: 'Questiona com 4 perguntas', body: '1) Que evidências tenho de que é verdade? 2) Que evidências tenho de que pode não ser? 3) Qual é o pior cenário realista? 4) Conseguia lidar com isso?', time: '5 min' },
+              { title: 'Formula um pensamento alternativo', body: 'Não positivo — realista. "Posso ter cometido um erro, mas tenho um bom historial e posso resolver."', time: '1 min' },
+            ],
+            reflections: ['A intensidade do pensamento mudou depois das 4 perguntas?']
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'loneliness',
+    icon: '🫧',
+    color: '#7B6FA0',
+    bgColor: '#F0EEF8',
+    name: 'Solidão e Conexão',
+    desc: 'Para quem se sente incompreendido(a), sozinho(a) mesmo rodeado de pessoas, ou desconectado(a).',
+    weeks: 4, days: 28, minutes: '6–10',
+    techniques: ['CFT', 'ACT', 'TCC'],
+    badgeColors: [
+      { bg: '#F0EEF8', color: '#7B6FA0' },
+      { bg: '#F0EEF8', color: '#7B6FA0' },
+      { bg: '#EAF0EB', color: '#6B8F71' },
+    ],
+    weekData: [
+      {
+        title: 'Semana 1 — Reconhecer',
+        days: [
+          { title: 'Tipos de solidão', technique: 'Psicoeducação', time: '5 min', type: 'Leitura', typeColor: '#F7EDE8', typeText: '#C4775A',
+            science: 'Cacioppo (2008) distingue solidão social (falta de contacto) de solidão íntima (falta de compreensão profunda). A segunda é mais dolorosa e mais comum.',
+            steps: [
+              { title: 'Aprende a diferença', body: 'Podes estar rodeado(a) de pessoas e sentir solidão íntima — a sensação de que ninguém realmente te conhece ou compreende. Isso é validado pela neurociência.', time: '3 min' },
+              { title: 'Identifica o teu tipo', body: 'A tua solidão é mais de quantidade (falta de pessoas) ou de qualidade (falta de compreensão genuína)?', time: '2 min' },
+            ],
+            reflections: ['Quando foi a última vez que te sentiste verdadeiramente compreendido(a)?', 'O que impede as tuas relações de terem mais profundidade?']
+          },
+          { title: 'Autocompaixão como base', technique: 'CFT', time: '8 min', type: 'Prática', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Neff (2003) demonstrou que autocompaixão reduz solidão porque quebra o ciclo de autocrítica que nos faz sentir indignos de conexão.',
+            steps: [
+              { title: 'Mão no coração', body: 'Coloca a mão no peito. Sente o calor. Este gesto simples ativa o sistema de afeto e reduz o cortisol.', time: '2 min' },
+              { title: 'Três frases de autocompaixão', body: '"Este é um momento de sofrimento." (reconhecer) "O sofrimento faz parte da experiência humana." (humanidade comum) "Que eu seja gentil comigo neste momento." (bondade)', time: '4 min' },
+              { title: 'Nota o que muda', body: 'O objetivo não é sentir-te melhor imediatamente. É criar um espaço de gentileza onde antes havia autocrítica.', time: '2 min' },
+            ],
+            reflections: ['Foi difícil ser gentil contigo? Mais do que seria com outra pessoa?']
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'eating',
+    icon: '🌿',
+    color: '#6B8F71',
+    bgColor: '#EAF0EB',
+    name: 'Alimentação Emocional',
+    desc: 'Para quem come em resposta a emoções — stress, tédio, tristeza, recompensa — e quer quebrar esse padrão.',
+    weeks: 4, days: 28, minutes: '5–10',
+    techniques: ['DBT', 'TCC', 'Mindfulness'],
+    badgeColors: [
+      { bg: '#F0EEF8', color: '#7B6FA0' },
+      { bg: '#EAF0EB', color: '#6B8F71' },
+      { bg: '#E8F4F8', color: '#4A8FA8' },
+    ],
+    weekData: [
+      {
+        title: 'Semana 1 — Compreender o padrão',
+        days: [
+          { title: 'Fome física vs. fome emocional', technique: 'Psicoeducação', time: '5 min', type: 'Leitura', typeColor: '#F7EDE8', typeText: '#C4775A',
+            science: 'A alimentação emocional ativa os mesmos circuitos de recompensa que substâncias aditivas (Volkow et al., 2012). Não é falta de força de vontade — é neurobiologia.',
+            steps: [
+              { title: 'Aprende a diferença', body: 'Fome física: surge gradualmente, qualquer comida serve, para quando está saciada, sem culpa depois. Fome emocional: surge de repente, pede alimentos específicos, não para com saciedade, gera culpa.', time: '3 min' },
+              { title: 'Avalia o teu padrão', body: 'Na última semana, quantas vezes comeste por fome física vs. emocional? Estima uma percentagem honesta.', time: '2 min' },
+            ],
+            reflections: ['Que emoção aparece mais frequentemente antes de comer emocionalmente?', 'O que a comida "resolve" nesse momento — mesmo que temporariamente?']
+          },
+          { title: 'Diário do impulso', technique: 'DBT', time: '7 min', type: 'Exercício', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Na DBT (Linehan), o diário de impulsos cria uma pausa entre o gatilho e a resposta — a janela onde a mudança acontece.',
+            steps: [
+              { title: 'Cria um registo simples', body: 'Durante 3 dias, antes de comer fora das refeições, escreve: HORA | EMOÇÃO | INTENSIDADE (1-10) | O QUE ACONTECEU ANTES', time: '2 min/episódio' },
+              { title: 'Procura padrões', body: 'Ao fim de 3 dias, revê os registos. Há uma emoção dominante? Uma hora do dia? Uma situação recorrente?', time: '5 min' },
+            ],
+            reflections: ['Qual é o gatilho mais frequente?', 'Há alguma emoção que nunca "resolves" de outra forma?']
+          },
+          { title: 'Surf do impulso', technique: 'Mindfulness', time: '8 min', type: 'Prática', typeColor: '#E8F4F8', typeText: '#4A8FA8',
+            science: 'Urge surfing (Marlatt, 1985) é uma técnica mindfulness que ensina a observar o impulso sem agir — sabendo que ele vai passar como uma onda.',
+            steps: [
+              { title: 'Quando sentires o impulso — para', body: 'Em vez de agir imediatamente, define um intervalo de 10 minutos. O impulso raramente sobrevive a 10 minutos de observação consciente.', time: '1 min' },
+              { title: 'Observa o impulso no corpo', body: 'Onde o sentes? Estômago, peito, garganta? Como se move? Intensifica ou diminui enquanto o observas?', time: '5 min' },
+              { title: 'Decide conscientemente', body: 'Depois dos 10 minutos, podes comer — mas agora é uma decisão consciente, não uma reação automática. Isso muda tudo.', time: '2 min' },
+            ],
+            reflections: ['O impulso diminuiu durante os 10 minutos?', 'O que descobriste sobre a emoção por baixo?']
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'selfworth',
+    icon: '✨',
+    color: '#B05070',
+    bgColor: '#F8EEF2',
+    name: 'Autoestima e Identidade',
+    desc: 'Para quem se sente perdido(a), com autocrítica elevada, ou que não sabe bem quem é fora do papel que desempenha.',
+    weeks: 4, days: 28, minutes: '7–10',
+    techniques: ['CFT', 'ACT', 'TCC'],
+    badgeColors: [
+      { bg: '#F8EEF2', color: '#B05070' },
+      { bg: '#F0EEF8', color: '#7B6FA0' },
+      { bg: '#EAF0EB', color: '#6B8F71' },
+    ],
+    weekData: [
+      {
+        title: 'Semana 1 — Quem és tu?',
+        days: [
+          { title: 'O crítico interno', technique: 'CFT', time: '8 min', type: 'Exercício', typeColor: '#F8EEF2', typeText: '#B05070',
+            science: 'A voz autocrítica interna tem origem em mecanismos de sobrevivência social — medo de rejeição e exclusão. A CFT de Gilbert trabalha diretamente este padrão.',
+            steps: [
+              { title: 'Personifica o teu crítico', body: 'Se a tua voz autocrítica fosse uma personagem, como seria? Que tom usa? Que palavras repete? Dá-lhe um nome — isso cria distância.', time: '3 min' },
+              { title: 'Responde com o teu eu compassivo', body: 'Imagina outra personagem — o teu eu mais sábio e gentil. Como responderia ao crítico? O que saberia que o crítico ignora?', time: '5 min' },
+            ],
+            reflections: ['De onde veio essa voz? Parece-se com alguém que conheces?', 'Essa voz protege-te de algo — ou só te faz mal?']
+          },
+          { title: 'Valores vs. papéis', technique: 'ACT', time: '9 min', type: 'Reflexão', typeColor: '#F0EEF8', typeText: '#7B6FA0',
+            science: 'Na ACT, confundir identidade com papéis (analista funcional, filha, parceira) é fonte de fragilidade. A identidade baseada em valores é mais estável.',
+            steps: [
+              { title: 'Lista os teus papéis', body: 'Escreve todos os papéis que desempenhas: profissional, familiar, social. Quantos são?', time: '2 min' },
+              { title: 'Separa papel de valor', body: 'Para cada papel, pergunta: "O que é que valorizo neste papel?" O papel pode mudar; o valor permanece.', time: '4 min' },
+              { title: 'Define quem és sem os papéis', body: 'Se perdesses todos os papéis amanhã, o que restaria de ti? Que valores, que formas de estar, que qualidades?', time: '3 min' },
+            ],
+            reflections: ['A tua autoestima depende de desempenhar bem os papéis — ou existe independentemente?', 'O que sabes sobre ti que os outros raramente veem?']
+          },
+        ]
+      },
+    ]
+  },
+];
+
+let activeExercise = null;
+
+function renderModules() {
+  const list = document.getElementById('modules-list');
+  list.innerHTML = '';
+  modules.forEach((mod, mi) => {
+    const card = document.createElement('div');
+    card.className = 'module-card';
+    card.id = 'mod-' + mod.id;
+
+    const techBadges = mod.techniques.map((t, i) =>
+      `<span class="badge" style="background:${mod.badgeColors[i].bg};color:${mod.badgeColors[i].color}">${t}</span>`
+    ).join('');
+
+    // Flatten all days
+    const allDays = mod.weekData.flatMap(w => w.days);
+    const totalDays = allDays.length;
+
+    let weeksHtml = mod.weekData.map((week, wi) => {
+      const daysHtml = week.days.map((day, di) => {
+        const globalIdx = mod.weekData.slice(0, wi).reduce((a, w) => a + w.days.length, 0) + di;
+        return `<div class="day-card" id="day-${mod.id}-${globalIdx}" onclick="toggleExercise('${mod.id}', ${globalIdx})">
+          <div class="day-number">Dia ${globalIdx + 1}</div>
+          <div class="day-title">${day.title}</div>
+          <div class="day-technique">${day.technique}</div>
+          <div class="day-meta">
+            <span class="day-time">⏱ ${day.time}</span>
+            <span class="day-type" style="background:${day.typeColor};color:${day.typeText}">${day.type}</span>
+          </div>
+        </div>`;
+      }).join('');
+
+      return `<div class="week-block">
+        <div class="week-label">${week.title}</div>
+        <div class="days-grid">${daysHtml}</div>
+      </div>`;
+    }).join('');
+
+    // Exercise panels (one per day)
+    const allDaysFull = mod.weekData.flatMap(w => w.days);
+    const panelsHtml = allDaysFull.map((day, gi) => {
+      const stepsHtml = day.steps.map((s, si) =>
+        `<div class="step-item">
+          <div class="step-num">${si + 1}</div>
+          <div class="step-content">
+            <div class="step-title">${s.title}</div>
+            <div class="step-body">${s.body}</div>
+            <div class="step-time">⏱ ${s.time}</div>
+          </div>
+        </div>`
+      ).join('');
+
+      const reflsHtml = day.reflections.map(r =>
+        `<div class="reflection-q">${r}</div>`
+      ).join('');
+
+      return `<div class="exercise-panel" id="panel-${mod.id}-${gi}">
+        <div class="panel-header">
+          <div class="panel-title">${day.title}</div>
+          <button class="panel-close" onclick="closePanel('${mod.id}', ${gi})">×</button>
+        </div>
+        <div class="panel-science">
+          <div class="panel-science-label">📚 Base científica</div>
+          <div class="panel-science-text">${day.science}</div>
+        </div>
+        <div class="steps-list">${stepsHtml}</div>
+        <div class="reflection-box">
+          <div class="reflection-label">💭 Para refletir depois</div>
+          <div class="reflection-questions">${reflsHtml}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="module-header" onclick="toggleModule('${mod.id}')">
+        <div class="module-icon" style="background:${mod.bgColor}">${mod.icon}</div>
+        <div class="module-meta">
+          <div class="module-badges">${techBadges}</div>
+          <div class="module-name">${mod.name}</div>
+          <div class="module-desc">${mod.desc}</div>
+          <div class="module-stats">
+            <span class="stat"><span class="stat-icon">📅</span>${mod.weeks} semanas</span>
+            <span class="stat"><span class="stat-icon">🗓</span>${totalDays} exercícios disponíveis</span>
+            <span class="stat"><span class="stat-icon">⏱</span>${mod.minutes} min/dia</span>
+          </div>
+        </div>
+        <button class="toggle-btn">▾</button>
+      </div>
+      <div class="module-body">
+        <div class="weeks-list">${weeksHtml}</div>
+        ${panelsHtml}
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleModule(id) {
+  const card = document.getElementById('mod-' + id);
+  card.classList.toggle('open');
+}
+
+function toggleExercise(modId, dayIdx) {
+  const panel = document.getElementById(`panel-${modId}-${dayIdx}`);
+  const dayCard = document.getElementById(`day-${modId}-${dayIdx}`);
+
+  // Close others in same module
+  document.querySelectorAll(`[id^="panel-${modId}-"]`).forEach(p => {
+    if (p !== panel) p.classList.remove('active');
+  });
+  document.querySelectorAll(`[id^="day-${modId}-"]`).forEach(d => {
+    if (d !== dayCard) d.classList.remove('active');
+  });
+
+  const isOpen = panel.classList.toggle('active');
+  dayCard.classList.toggle('active', isOpen);
+
+  if (isOpen) {
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+function closePanel(modId, dayIdx) {
+  document.getElementById(`panel-${modId}-${dayIdx}`).classList.remove('active');
+  document.getElementById(`day-${modId}-${dayIdx}`).classList.remove('active');
+}
+
+renderModules();
+</script>
+</body>
+</html>
